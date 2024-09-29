@@ -4,7 +4,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building...'
-                build.bat
+                bat 'build.bat'
             }
         }
     }
