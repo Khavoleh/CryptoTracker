@@ -1,17 +1,18 @@
 using CryptoTracker.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace CryptoTracker.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CryptoController(HttpClient httpClient) : ControllerBase
+    public class CryptoController(HttpClient httpClient, IOptions<ApiSettings> apiSettings) : ControllerBase
     {
-        private static readonly string ApiKey = "0970314d-abb9-47ed-ace9-4527ee561e6a";
-        private static readonly string BaseUrl = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest";
+        private const string BaseUrl = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest";
+        private readonly string apiKey = apiSettings.Value.ApiKey;
 
-        [HttpGet("latest")]
+        [HttpGet("topCrypto")]
         public async Task<IActionResult> GetLatestCryptoListing()
         {
             try
@@ -30,7 +31,7 @@ namespace CryptoTracker.Controllers
             var url = $"{BaseUrl}?slug=bitcoin,ethereum,tether,bnb,solana";
 
             using var request = new HttpRequestMessage(HttpMethod.Get, url);
-            request.Headers.Add("X-CMC_PRO_API_KEY", ApiKey);
+            request.Headers.Add("X-CMC_PRO_API_KEY", apiKey);
             request.Headers.Add("Accept", "application/json");
 
             var response = await httpClient.SendAsync(request);
