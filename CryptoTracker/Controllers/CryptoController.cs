@@ -1,7 +1,7 @@
 using CryptoTracker.Models;
+using CryptoTracker.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using CryptoTracker.Services;
 using Newtonsoft.Json;
 
 namespace CryptoTracker.Controllers
