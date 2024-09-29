@@ -1,6 +1,7 @@
 using CryptoTracker.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using CryptoTracker.Services;
 using Newtonsoft.Json;
 
 namespace CryptoTracker.Controllers
@@ -18,12 +19,32 @@ namespace CryptoTracker.Controllers
             try
             {
                 var result = await MakeApiCall();
+
+                if (result == null)
+                {
+                    return NotFound();
+                }
+
+                await CalculateTokenCapitalization(result);
+
                 return Ok(result);
             }
             catch (HttpRequestException ex)
             {
                 return StatusCode(500, $"Error fetching data: {ex.Message}");
             }
+        }
+
+        private static Task CalculateTokenCapitalization(CryptoResponse cryptoResponse)
+        {
+            foreach (var kvp in cryptoResponse.Data)
+            {
+                kvp.Value.Quote.Usd.Capitalization = CryptoCapitalizationCalculator.CalculateMarketCap(
+                    kvp.Value.CirculatingSupply,
+                    kvp.Value.Quote.Usd.Price);
+            }
+
+            return Task.CompletedTask;
         }
 
         private async Task<CryptoResponse?> MakeApiCall()

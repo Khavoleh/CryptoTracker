@@ -18,4 +18,6 @@ public class Usd
 
     [JsonProperty("percent_change_7d")]
     public decimal? PercentChange7D { get; set; }
+
+    public decimal? Capitalization { get; set; } = 0;
 }
