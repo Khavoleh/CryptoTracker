@@ -6,15 +6,20 @@ using Newtonsoft.Json;
 
 namespace CryptoTracker.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class CryptoController(HttpClient httpClient, IOptions<ApiSettings> apiSettings) : ControllerBase
+    [Route("")]
+    public class CryptoController(HttpClient httpClient, IOptions<ApiSettings> apiSettings) : Controller
     {
         private const string BaseUrl = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest";
         private readonly string apiKey = apiSettings.Value.ApiKey;
 
+        [HttpGet("")]
+        public IActionResult Index()
+        {
+            return RedirectToAction("TopCrypto");
+        }
+
         [HttpGet("topCrypto")]
-        public async Task<IActionResult> GetLatestCryptoListing()
+        public async Task<IActionResult> TopCrypto()
         {
             try
             {
@@ -27,11 +32,11 @@ namespace CryptoTracker.Controllers
 
                 await CalculateTokenCapitalization(result);
 
-                return Ok(result);
+                return View(result);
             }
             catch (HttpRequestException ex)
             {
-                return StatusCode(500, $"Error fetching data: {ex.Message}");
+                return NotFound();
             }
         }
 

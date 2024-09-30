@@ -4,7 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddHttpClient();
-builder.Services.AddControllers();
+builder.Services.AddControllersWithViews();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -13,13 +13,16 @@ builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("Crypto
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI();
-
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
+
+app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Crypto}/{action=Index}/{id?}");
 
 await app.RunAsync();
